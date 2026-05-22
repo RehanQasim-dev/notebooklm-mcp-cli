@@ -176,6 +176,8 @@ def query_notebook(
                 timeout=timeout,
             )
 
+        result.pop("citations", None)
+        result.pop("references", None)
         fmt = detect_output_format(json_output)
         formatter = get_formatter(fmt, console)
         formatter.format_item(result, title="Query Response")

@@ -19,6 +19,7 @@ def notebook_query(
     source_ids: list[str] | None = None,
     conversation_id: str | None = None,
     timeout: float | None = None,
+    include_citations: bool = False,
 ) -> ResultDict:
     """Ask AI about EXISTING sources already in notebook. NOT for finding new sources.
 
@@ -30,6 +31,7 @@ def notebook_query(
         source_ids: Source IDs to query (default: all)
         conversation_id: For follow-up questions
         timeout: Request timeout in seconds (default: from env NOTEBOOKLM_QUERY_TIMEOUT or 120.0)
+        include_citations: Include citations and references in response (default: False)
     """
     try:
         client = get_client()
@@ -44,6 +46,9 @@ def notebook_query(
             conversation_id=conversation_id,
             timeout=effective_timeout,
         )
+        if not include_citations:
+            result.pop("citations", None)
+            result.pop("references", None)
         return {"status": "success", **result}
     except ServiceError as e:
         return error_result(e.user_message, hint=e.hint)
