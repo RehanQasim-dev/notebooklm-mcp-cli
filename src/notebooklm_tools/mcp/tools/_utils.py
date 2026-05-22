@@ -215,10 +215,24 @@ def logged_tool() -> Callable[[Callable[P, Any]], Callable[P, Any]]:
     return decorator
 
 
+_ENABLED_TOOLS = {
+    "notebook_query",
+    "notebook_query_start",
+    "notebook_query_status",
+    "notebook_list",
+    "notebook_get",
+    "notebook_describe",
+    "refresh_auth",
+    "save_auth_tokens",
+    "server_info",
+}
+
+
 def register_all_tools(mcp: Any) -> None:
     """Register all collected tools with the MCP instance."""
-    for _, wrapper in _tool_registry:
-        mcp.tool()(wrapper)
+    for name, wrapper in _tool_registry:
+        if name in _ENABLED_TOOLS:
+            mcp.tool()(wrapper)
 
 
 # Essential cookies for NotebookLM API authentication
