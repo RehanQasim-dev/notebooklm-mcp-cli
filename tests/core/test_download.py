@@ -122,9 +122,9 @@ class TestDownloadMixinMethods:
         ]
         result = DownloadMixin._format_quiz_markdown("Test Quiz", questions)
         assert "## Answer Key & Detailed Rationales" in result
-        assert "✅ **Correct**: *\"4\"*" in result
+        assert "- **Correct**: *\"4\"*" in result
         assert "Correct sum" in result
-        assert "❌ **Incorrect**: *\"3\"*" in result
+        assert "- **Incorrect**: *\"3\"*" in result
         assert "Too low" in result
 
     def test_format_flashcards_markdown(self):

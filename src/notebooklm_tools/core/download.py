@@ -1080,7 +1080,7 @@ class DownloadMixin(BaseClient):
 
                 for opt in q.get("answerOptions", []):
                     is_corr = opt.get("isCorrect", False)
-                    badge = "✅ **Correct**" if is_corr else "❌ **Incorrect**"
+                    badge = "**Correct**" if is_corr else "**Incorrect**"
                     text = opt.get("text", "")
                     rationale = opt.get("rationale", "")
                     lines.append(f"- {badge}: *\"{text}\"*")
