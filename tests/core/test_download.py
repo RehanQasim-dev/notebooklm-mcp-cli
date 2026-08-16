@@ -108,6 +108,25 @@ class TestDownloadMixinMethods:
         assert "[ ] 3" in result
         assert "**Hint:** Think simple" in result
 
+    def test_format_quiz_markdown_with_rationales(self):
+        """Test quiz markdown formatting includes Answer Key & Rationales section."""
+        questions = [
+            {
+                "question": "What is 2+2?",
+                "answerOptions": [
+                    {"text": "3", "isCorrect": False, "rationale": "Too low"},
+                    {"text": "4", "isCorrect": True, "rationale": "Correct sum"},
+                ],
+                "hint": "Think simple",
+            }
+        ]
+        result = DownloadMixin._format_quiz_markdown("Test Quiz", questions)
+        assert "## Answer Key & Detailed Rationales" in result
+        assert "✅ **Correct**: *\"4\"*" in result
+        assert "Correct sum" in result
+        assert "❌ **Incorrect**: *\"3\"*" in result
+        assert "Too low" in result
+
     def test_format_flashcards_markdown(self):
         """Test flashcard markdown formatting."""
         cards = [{"f": "Front text", "b": "Back text"}]

@@ -1034,7 +1034,7 @@ class DownloadMixin(BaseClient):
 
     @staticmethod
     def _format_quiz_markdown(title: str, questions: list[dict]) -> str:
-        """Format quiz as markdown.
+        """Format quiz as markdown with questions first and full rationales at the end.
 
         Args:
             title: Quiz title.
@@ -1045,6 +1045,7 @@ class DownloadMixin(BaseClient):
         """
         lines = [f"# {title}", ""]
 
+        # Questions section
         for i, q in enumerate(questions, 1):
             lines.append(f"## Question {i}")
             lines.append(q.get("question", ""))
@@ -1059,6 +1060,34 @@ class DownloadMixin(BaseClient):
                 lines.append(f"**Hint:** {q['hint']}")
 
             lines.append("")
+
+        # Answer Key & Rationales section at the end
+        has_rationales = any(
+            any(opt.get("rationale") for opt in q.get("answerOptions", []))
+            for q in questions
+        )
+
+        if has_rationales:
+            lines.append("---")
+            lines.append("")
+            lines.append("## Answer Key & Detailed Rationales")
+            lines.append("")
+
+            for i, q in enumerate(questions, 1):
+                lines.append(f"### Question {i}")
+                lines.append(f"**{q.get('question', '')}**")
+                lines.append("")
+
+                for opt in q.get("answerOptions", []):
+                    is_corr = opt.get("isCorrect", False)
+                    badge = "✅ **Correct**" if is_corr else "❌ **Incorrect**"
+                    text = opt.get("text", "")
+                    rationale = opt.get("rationale", "")
+                    lines.append(f"- {badge}: *\"{text}\"*")
+                    if rationale:
+                        lines.append(f"  > {rationale}")
+
+                lines.append("")
 
         return "\n".join(lines)
 
