@@ -160,6 +160,13 @@ def query_notebook(
     timeout: float | None = typer.Option(
         None, "--timeout", "-t", help="Query timeout in seconds (default: 120)"
     ),
+    citations: bool = typer.Option(
+        False,
+        "--citations",
+        "--include-citations",
+        "-C",
+        help="Include citations and references in output",
+    ),
 ) -> None:
     """Chat with notebook sources."""
     try:
@@ -176,8 +183,9 @@ def query_notebook(
                 timeout=timeout,
             )
 
-        result.pop("citations", None)
-        result.pop("references", None)
+        if not citations:
+            result.pop("citations", None)
+            result.pop("references", None)
         fmt = detect_output_format(json_output)
         formatter = get_formatter(fmt, console)
         formatter.format_item(result, title="Query Response")
