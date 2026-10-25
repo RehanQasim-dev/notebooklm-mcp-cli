@@ -1148,6 +1148,15 @@ def extract_cookies_from_page(
                 current_url = get_current_url(ws_url)
                 if is_logged_in(current_url):
                     break
+                # Sign-in often finishes in another tab (the NotebookLM landing
+                # page opens the app in a new one), so adopt any logged-in tab.
+                for other in get_pages_by_cdp_url(cdp_http_url):
+                    other_ws = _normalize_ws_url(other.get("webSocketDebuggerUrl"))
+                    if other_ws and is_logged_in(other.get("url", "")):
+                        ws_url, current_url = other_ws, other.get("url", "")
+                        break
+                if is_logged_in(current_url):
+                    break
             except Exception:
                 pass
             elapsed = int(time.time() - start_time)

@@ -137,6 +137,24 @@ def _check_authentication(verbose: bool) -> bool:
             )
             console.print(f"  Account: {email}")
 
+            # Cookies on disk can be expired, so only a real call shows they work.
+            if has_cookies:
+                try:
+                    from notebooklm_tools.core.client import NotebookLMClient
+
+                    with NotebookLMClient(
+                        cookies=profile.cookies,
+                        csrf_token=profile.csrf_token or "",
+                        session_id=profile.session_id or "",
+                        build_label=profile.build_label or "",
+                    ) as client:
+                        client.list_notebooks()
+                    console.print("  Session: [green]valid[/green]")
+                except Exception as e:
+                    console.print(f"  Session: [red]rejected[/red] ({getattr(e, 'message', e)})")
+                    console.print("  [yellow]→[/yellow] Run [cyan]nlm login[/cyan] to re-authenticate")
+                    ok = False
+
             if verbose:
                 # Show last validated time
                 last_validated = getattr(profile, "last_validated", None)
